@@ -145,3 +145,7 @@ docker-compose.yml
 - 認証情報（Discordトークン・Anthropic APIキー・GCPサービスアカウント鍵）はすべて `.env` またはファイルマウントで管理し、コードに直書きしない
 - 同一メッセージに複数回 📋 を押した場合の重複登録防止は行っていない（シンプルさ優先の設計判断）
 - `googleapis` ではなく軽量な `@googleapis/sheets` を使用しています。フルの `googleapis` はメモリの少ない環境（無料枠のVMなど）でTypeScriptビルドがメモリ不足になりやすいため
+
+## License
+
+[MIT](./LICENSE)
