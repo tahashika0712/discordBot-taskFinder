@@ -9,6 +9,7 @@ import {
 import { config } from "../config.js";
 import { extractTask } from "../llm/extractTask.js";
 import { appendTaskRow } from "../sheets/sheetsClient.js";
+import { getSpreadsheetId } from "../store/guildSheetStore.js";
 import type { SourceMessage } from "../types.js";
 
 const MENTION_PATTERN = /<@!?(\d+)>/g;
@@ -35,6 +36,22 @@ async function handleReaction(
     ? await fullReaction.message.fetch()
     : fullReaction.message;
 
+  if (!message.guildId) {
+    await message.react("❌").catch(() => {});
+    return;
+  }
+
+  const spreadsheetId = getSpreadsheetId(message.guildId);
+  if (!spreadsheetId) {
+    await message.react("❌").catch(() => {});
+    await message
+      .reply(
+        "⚠️ このサーバーはまだタスク登録先のスプレッドシートが設定されていません。サーバー管理者が `/set-sheet` コマンドで設定してください。",
+      )
+      .catch(() => {});
+    return;
+  }
+
   const sourceMessage: SourceMessage = {
     content: resolveMentions(message),
     authorName: message.member?.displayName ?? message.author.username,
@@ -54,7 +71,7 @@ async function handleReaction(
       return;
     }
 
-    await appendTaskRow(extraction, message.url);
+    await appendTaskRow(spreadsheetId, extraction, message.url);
     await message.react("✅").catch(() => {});
   } catch (err) {
     const reason = err instanceof Error ? err.message : String(err);

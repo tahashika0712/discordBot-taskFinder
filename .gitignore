@@ -5,3 +5,4 @@ dist/
 gcp-service-account.json
 .DS_Store
 .claude/settings.local.json
+data/
