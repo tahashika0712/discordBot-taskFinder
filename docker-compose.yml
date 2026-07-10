@@ -10,3 +10,4 @@ services:
       GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp-service-account.json
     volumes:
       - ./gcp-service-account.json:/run/secrets/gcp-service-account.json:ro
+      - ./data:/app/data

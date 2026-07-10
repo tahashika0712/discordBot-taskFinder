@@ -9,7 +9,10 @@
       "Bash(node .tmp-test-append.mjs)",
       "Bash(git commit -m ' *)",
       "Bash(kill 77780 30332)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git checkout *)",
+      "Bash(node .tmp-test-store.mjs)",
+      "Bash(pkill -f \"node dist/index.js\")"
     ]
   }
 }
