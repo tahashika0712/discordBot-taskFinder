@@ -12,7 +12,9 @@
       "Bash(git commit *)",
       "Bash(git checkout *)",
       "Bash(node .tmp-test-store.mjs)",
-      "Bash(pkill -f \"node dist/index.js\")"
+      "Bash(pkill -f \"node dist/index.js\")",
+      "Bash(git pull *)",
+      "Bash(git merge *)"
     ]
   }
 }
