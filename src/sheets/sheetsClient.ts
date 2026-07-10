@@ -1,6 +1,6 @@
 import { sheets_v4, sheets, auth as authPlus } from "@googleapis/sheets";
 import { config } from "../config.js";
-import type { TaskExtraction } from "../types.js";
+import type { Task } from "../types.js";
 
 const auth = new authPlus.GoogleAuth({
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
@@ -13,20 +13,21 @@ function todayJst(): string {
   return now.toLocaleDateString("sv-SE", { timeZone: "Asia/Tokyo" }).replace(/-/g, "/");
 }
 
-export async function appendTaskRow(
+export async function appendTaskRows(
   spreadsheetId: string,
-  task: TaskExtraction,
+  tasks: Task[],
   sourceUrl: string,
 ): Promise<void> {
-  const row = [
-    todayJst(),
+  const today = todayJst();
+  const rows = tasks.map((task) => [
+    today,
     task.task_name,
     task.task_detail,
     task.assignee,
     task.due_date ?? "",
     "未着手",
     sourceUrl,
-  ];
+  ]);
 
   await sheetsClient.spreadsheets.values.append({
     spreadsheetId,
@@ -34,7 +35,7 @@ export async function appendTaskRow(
     valueInputOption: "USER_ENTERED",
     insertDataOption: "INSERT_ROWS",
     requestBody: {
-      values: [row],
+      values: rows,
     },
   });
 }

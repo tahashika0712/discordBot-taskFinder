@@ -8,7 +8,7 @@ import {
 } from "discord.js";
 import { config } from "../config.js";
 import { extractTask } from "../llm/extractTask.js";
-import { appendTaskRow } from "../sheets/sheetsClient.js";
+import { appendTaskRows } from "../sheets/sheetsClient.js";
 import { getSpreadsheetId } from "../store/guildSheetStore.js";
 import type { SourceMessage } from "../types.js";
 
@@ -62,7 +62,7 @@ async function handleReaction(
   try {
     const extraction = await extractTask(sourceMessage);
 
-    if (!extraction.is_task) {
+    if (!extraction.is_task || extraction.tasks.length === 0) {
       console.log(`[スキップ] タスクではないと判断されました: ${message.url}`);
       await message.react("❌").catch(() => {});
       await message
@@ -71,8 +71,13 @@ async function handleReaction(
       return;
     }
 
-    await appendTaskRow(spreadsheetId, extraction, message.url);
+    await appendTaskRows(spreadsheetId, extraction.tasks, message.url);
     await message.react("✅").catch(() => {});
+
+    if (extraction.tasks.length > 1) {
+      const list = extraction.tasks.map((t) => `・${t.task_name}`).join("\n");
+      await message.reply(`✅ ${extraction.tasks.length}件のタスクを登録しました。\n${list}`).catch(() => {});
+    }
   } catch (err) {
     const reason = err instanceof Error ? err.message : String(err);
     console.error(`[処理エラー] ${message.url}:`, err);
