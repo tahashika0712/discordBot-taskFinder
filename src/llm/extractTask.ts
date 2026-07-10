@@ -1,14 +1,14 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { config } from "../config.js";
-import type { SourceMessage, TaskExtraction } from "../types.js";
+import type { SourceMessage, TaskExtractionResult } from "../types.js";
 import { buildSystemPrompt, buildUserPrompt, taskExtractionSchema } from "./prompt.js";
 
 const client = new Anthropic({ apiKey: config.anthropicApiKey });
 
-export async function extractTask(message: SourceMessage): Promise<TaskExtraction> {
+export async function extractTask(message: SourceMessage): Promise<TaskExtractionResult> {
   const response = await client.messages.create({
     model: config.claudeModel,
-    max_tokens: 1024,
+    max_tokens: 2048,
     system: buildSystemPrompt(),
     messages: [{ role: "user", content: buildUserPrompt(message) }],
     output_config: {
@@ -30,5 +30,5 @@ export async function extractTask(message: SourceMessage): Promise<TaskExtractio
     throw new Error("Claudeの応答にテキストブロックが含まれていません。");
   }
 
-  return JSON.parse(textBlock.text) as TaskExtraction;
+  return JSON.parse(textBlock.text) as TaskExtractionResult;
 }
