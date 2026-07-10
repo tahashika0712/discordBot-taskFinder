@@ -1,0 +1,12 @@
+services:
+  discord-task-finder:
+    build: .
+    container_name: discord-task-finder
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      # .env のローカル用パスをコンテナ内パスで上書き
+      GOOGLE_APPLICATION_CREDENTIALS: /run/secrets/gcp-service-account.json
+    volumes:
+      - ./gcp-service-account.json:/run/secrets/gcp-service-account.json:ro
