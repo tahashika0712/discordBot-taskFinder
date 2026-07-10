@@ -1,12 +1,12 @@
-import { google } from "googleapis";
+import { sheets_v4, sheets, auth as authPlus } from "@googleapis/sheets";
 import { config } from "../config.js";
 import type { TaskExtraction } from "../types.js";
 
-const auth = new google.auth.GoogleAuth({
+const auth = new authPlus.GoogleAuth({
   scopes: ["https://www.googleapis.com/auth/spreadsheets"],
 });
 
-const sheets = google.sheets({ version: "v4", auth });
+const sheetsClient: sheets_v4.Sheets = sheets({ version: "v4", auth });
 
 function todayJst(): string {
   const now = new Date();
@@ -24,7 +24,7 @@ export async function appendTaskRow(task: TaskExtraction, sourceUrl: string): Pr
     sourceUrl,
   ];
 
-  await sheets.spreadsheets.values.append({
+  await sheetsClient.spreadsheets.values.append({
     spreadsheetId: config.spreadsheetId,
     range: `${config.sheetName}!A:G`,
     valueInputOption: "USER_ENTERED",
